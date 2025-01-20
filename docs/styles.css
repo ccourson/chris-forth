@@ -31,3 +31,61 @@ body {
 #input:focus {
   outline: none;
 }
+
+#stack {
+  padding: 10px 0;
+  font: 12px monospace;
+}
+
+#dictionary {
+  padding: 5px 0;
+  font: 12px monospace;
+}
+
+#toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+#clear-button {
+  background: #f00;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#clear-button:hover {
+  background: #c00;
+}
+
+#clear-dictionary-button {
+  background: #00f;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+#clear-dictionary-button:hover {
+  background: #00c;
+}
+
+#help {
+  padding: 10px;
+  font: 14px Arial, sans-serif;
+  background: #f4f4f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.command-link {
+  color: #00f;
+  cursor: pointer;
+  text-decoration: underline;
+}

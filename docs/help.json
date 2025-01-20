@@ -1,0 +1,17 @@
+{
+  "+": "Adds the top two numbers on the stack. ( n1 n2 -- n3 )",
+  "-": "Subtracts the top number from the second top number on the stack. ( n1 n2 -- n3 )",
+  "*": "Multiplies the top two numbers on the stack. ( n1 n2 -- n3 )",
+  "/": "Divides the second top number by the top number on the stack. Division by zero is not allowed. ( n1 n2 -- n3 )",
+  ".": "Prints the top number on the stack. ( n -- )",
+  "dup": "Duplicates the top number on the stack. ( n -- n n )",
+  "drop": "Removes the top number from the stack. ( n -- )",
+  "swap": "Swaps the top two numbers on the stack. ( n1 n2 -- n2 n1 )",
+  "over": "Copies the second top number to the top of the stack. ( n1 n2 -- n1 n2 n1 )",
+  "if": "Begins an if block. Executes the following words if the top number on the stack is non-zero. ( flag -- )",
+  "else": "Begins an else block. Executes the following words if the top number on the stack is zero. ( -- )",
+  "then": "Ends an if or else block. ( -- )",
+  "begin": "Begins a loop block. ( -- )",
+  "until": "Ends a loop block. Repeats the loop if the top number on the stack is zero. ( flag -- )",
+  "=": "Compares the top two numbers on the stack. Pushes 1 if they are equal, otherwise pushes 0. ( n1 n2 -- flag )"
+}

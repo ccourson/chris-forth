@@ -247,31 +247,47 @@ function ForthInterpreter() {
   ForthInterpreter.prototype.visualizeDictionary = function() {
     const dictionaryContainer = document.getElementById('dictionary');
     if (dictionaryContainer) {
-      const builtInWords = Object.keys(this.dictionary).join(', ');
+      const builtInWords = Object.keys(this.dictionary).map(word => `<span class="command-link" onclick="forth.showHelp('${word}')">${word}</span>`).join(', ');
       const userWords = Object.keys(this.userWords).join(', ');
       dictionaryContainer.innerHTML = `<strong>Dictionary:</strong><br/><strong>Built-in:</strong> ${builtInWords}<br/><strong>User-defined:</strong> ${userWords || 'None'}`;
+    }
+  };
+
+  ForthInterpreter.prototype.clearStack = function() {
+    this.stack = [];
+    this.visualizeStack();
+    this.log('Stack cleared');
+  };
+
+  ForthInterpreter.prototype.clearDictionary = function() {
+    this.userWords = {};
+    this.visualizeDictionary();
+    this.log('Dictionary cleared');
+  };
+
+  ForthInterpreter.prototype.loadHelp = function() {
+    fetch('help.json')
+      .then(response => response.json())
+      .then(data => {
+        this.helpData = data;
+        this.visualizeDictionary(); // Update dictionary to include links
+      })
+      .catch(error => this.error('Failed to load help data'));
+  };
+  
+  ForthInterpreter.prototype.showHelp = function(command) {
+    const helpDiv = document.getElementById('help');
+    if (this.helpData && this.helpData[command]) {
+      helpDiv.innerHTML = `<strong>${command}:</strong> ${this.helpData[command]}`;
+    } else {
+      helpDiv.innerHTML = `No help available for '${command}'`;
     }
   };
   
   // Initialize Forth Interpreter
   (function() {
-    const forth = new ForthInterpreter();
-  
-    // Create dictionary visualization container
-    const output = document.getElementById('output');
-    const dictionaryContainer = document.createElement('div');
-    dictionaryContainer.id = 'dictionary';
-    dictionaryContainer.style.marginBottom = '10px';
-    dictionaryContainer.style.fontFamily = 'monospace';
-    output.parentNode.insertBefore(dictionaryContainer, output);
-  
-    // Create stack visualization container
-    const stackContainer = document.createElement('div');
-    stackContainer.id = 'stack';
-    stackContainer.style.marginTop = '10px';
-    stackContainer.style.fontFamily = 'monospace';
-    output.parentNode.insertBefore(stackContainer, output.nextSibling);
-  
+      const forth = new ForthInterpreter();
+    forth.loadHelp();
     forth.visualizeDictionary();
     forth.visualizeStack(); // Ensure stack is displayed on load
   
@@ -284,4 +300,21 @@ function ForthInterpreter() {
         inputField.value = '';
       }
     });
+
+    const clearButton = document.getElementById('clear-button');
+    clearButton.addEventListener('click', () => {
+      forth.clearStack();
+    });
+
+    const clearDictionaryButton = document.getElementById('clear-dictionary-button');
+    clearDictionaryButton.addEventListener('click', () => {
+      forth.clearDictionary();
+    });
+
+    const outputDiv = document.getElementById('output');
+    outputDiv.addEventListener('focus', () => {
+      inputField.focus();
+    });
+
+    window.forth = forth; // Make forth instance globally accessible for command links
 })();

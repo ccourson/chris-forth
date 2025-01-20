@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forth CLI</title>
+  <title>chris-forth</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Forth CLI</h1>
-  <div id="output">Forth CLI initialized.</div>
+  <h1>chris-forth</h1>
+  <p>A simple Forth interpreter written in JavaScript.</p>
+  <div id="toolbar">
+    <button id="clear-button">Clear Stack</button>
+    <button id="clear-dictionary-button">Clear Dictionary</button>
+  </div>
+  <div id="output" tabindex="0">Forth CLI initialized.</div>
   <input id="input" type="text" placeholder="Enter Forth commands here...">
+  <div id="stack"></div>
+  <div id="dictionary"></div>
+  <div id="help"></div>
   <script src="forth.js"></script>
 </body>
 </html>
