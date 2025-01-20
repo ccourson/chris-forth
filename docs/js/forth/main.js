@@ -1,3 +1,34 @@
+// Load all Forth scripts
+Promise.all([
+  loadScript('js/forth/persistence.js'),
+  loadScript('js/forth/add.js'),
+  loadScript('js/forth/subtract.js'),
+  loadScript('js/forth/multiply.js'),
+  loadScript('js/forth/divide.js'),
+  loadScript('js/forth/equals.js'),
+  loadScript('js/forth/print.js'),
+  loadScript('js/forth/dup.js'),
+  loadScript('js/forth/drop.js'),
+  loadScript('js/forth/swap.js'),
+  loadScript('js/forth/over.js'),
+  loadScript('js/forth/if.js'),
+  loadScript('js/forth/else.js'),
+  loadScript('js/forth/then.js'),
+  loadScript('js/forth/begin.js'),
+  loadScript('js/forth/until.js')
+]).then(() => {
+  console.log('All Forth scripts loaded.');
+  // Initialize the Forth interpreter here if needed
+  forth.loadState(); // Load the state from local storage on initialization
+
+  // Save state before the page unloads
+  window.addEventListener('beforeunload', () => {
+    forth.saveState();
+  });
+}).catch(error => {
+  console.error('Error loading Forth scripts:', error);
+});
+
 // Forth Interpreter implemented with prototype-based structure
 
 function ForthInterpreter() {
@@ -37,6 +68,7 @@ ForthInterpreter.prototype.clearStack = function() {
 
 ForthInterpreter.prototype.clearDictionary = function() {
   this.userWords = {};
+  forth.clearState(); // Clear the state from local storage
   this.visualizeDictionary();
   this.log('Dictionary cleared');
 };
@@ -102,32 +134,34 @@ ForthInterpreter.prototype.defineWord = function(name, commands) {
 };
 
 ForthInterpreter.prototype.execute = function(command) {
-  const tokens = command.split(/\s+/);
+  console.log('Executing command:', command);
+  this.tokens = command.split(/\s+/);
   this.executionPointer = 0;
 
-  while (this.executionPointer < tokens.length) {
-    const token = tokens[this.executionPointer];
+  while (this.executionPointer < this.tokens.length) {
+    const token = this.tokens[this.executionPointer];
+    console.log('Processing token:', token);
 
     if (token === ':') {
       // Start user-defined word
       this.executionPointer++;
-      const wordName = tokens[this.executionPointer];
+      const wordName = this.tokens[this.executionPointer];
       const wordDefinition = [];
       this.executionPointer++;
 
-      while (tokens[this.executionPointer] !== ';' && this.executionPointer < tokens.length) {
-        wordDefinition.push(tokens[this.executionPointer]);
+      while (this.tokens[this.executionPointer] !== ';' && this.executionPointer < this.tokens.length) {
+        wordDefinition.push(this.tokens[this.executionPointer]);
         this.executionPointer++;
       }
 
-      if (tokens[this.executionPointer] !== ';') {
-        return this.error("Missing ';' in word definition");
-      }
-
       this.defineWord(wordName, wordDefinition);
-      this.log(`Defined word: ${wordName}`);
+      // Save state after executing the command
+      this.saveState();
+
+      this.executionPointer++;
     } else if (!isNaN(parseFloat(token))) {
       this.stack.push(parseFloat(token));
+      this.visualizeStack();
     } else if (token in this.dictionary) {
       this.dictionary[token]();
     } else if (token in this.userWords) {
@@ -138,8 +172,6 @@ ForthInterpreter.prototype.execute = function(command) {
 
     this.executionPointer++;
   }
-
-  this.visualizeStack();
 };
 
 ForthInterpreter.prototype.log = function(message) {
@@ -150,9 +182,20 @@ ForthInterpreter.prototype.log = function(message) {
   }
 };
 
+// Function to dynamically load a script
+function loadScript(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 // Initialize Forth Interpreter
 (function() {
-  const forth = new ForthInterpreter();
+  window.forth = new ForthInterpreter();
   forth.loadHelp();
   forth.visualizeDictionary();
   forth.visualizeStack(); // Ensure stack is displayed on load
@@ -181,6 +224,4 @@ ForthInterpreter.prototype.log = function(message) {
   outputDiv.addEventListener('focus', () => {
     inputField.focus();
   });
-
-  window.forth = forth; // Make forth instance globally accessible for command links
 })();
